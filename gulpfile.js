@@ -1,19 +1,18 @@
-import { src, dest, watch, series, parallel } from 'gulp';
-import sass from 'gulp-dart-sass';  // Используем gulp-dart-sass вместо gulp-sass
-import cleanCSS from 'gulp-clean-css';
-import uglify from 'gulp-uglify';
-import avif from 'gulp-avif';
-import plumber from 'gulp-plumber';
-import fileInclude from 'gulp-file-include';
-import rename from 'gulp-rename';
-import browserSync from 'browser-sync';
-import newer from 'gulp-newer';
-import { promises as fs } from 'fs';  // Используем fs.promises для работы с файлами
-import path from 'path';
-import fonter from 'gulp-fonter';
-import ttf2woff2 from 'gulp-ttf2woff2';
+const { src, dest, watch, series, parallel } = require('gulp');
+const sass = require('gulp-dart-sass');
+const cleanCSS = require('gulp-clean-css');
+const uglify = require('gulp-uglify');
+const avif = require('gulp-avif');
+const plumber = require('gulp-plumber');
+const fileInclude = require('gulp-file-include');
+const rename = require('gulp-rename');
+const browserSync = require('browser-sync').create();
+const newer = require('gulp-newer');
+const fonter = require('gulp-fonter');
+const ttf2woff2 = require('gulp-ttf2woff2');
+const fs = require('fs').promises;
+const path = require('path');
 
-// Пути
 const paths = {
   html: {
     src: 'page/**/*.html',
@@ -39,14 +38,11 @@ const paths = {
 };
 
 // Очистка dist
-async function clean() {
-  try {
-    const distPath = path.resolve('dist');
-    await fs.rm(distPath, { recursive: true, force: true });  // Используем fs.promises.rm
-    console.log('Папка dist успешно удалена');
-  } catch (err) {
-    console.error('Ошибка при удалении dist:', err);
-  }
+function clean() {
+  const distPath = path.resolve('dist');
+  return fs.rm(distPath, { recursive: true, force: true })
+    .then(() => console.log('Папка dist успешно удалена'))
+    .catch((err) => console.error('Ошибка при удалении dist:', err));
 }
 
 // HTML
@@ -63,8 +59,8 @@ function html() {
 // SCSS
 function styles() {
   return src(paths.styles.src)
-    .pipe(plumber())  // Добавляем обработку ошибок
-    .pipe(sass().on('error', sass.logError))  // Используем правильный подход для компиляции SCSS
+    .pipe(plumber())
+    .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS())
     .pipe(dest(paths.styles.dest))
     .pipe(browserSync.stream());
@@ -82,13 +78,12 @@ function scripts() {
 
 // Images
 function images() {
-  return src(paths.images.src, { allowEmpty: true })  // Добавляем allowEmpty
+  return src(paths.images.src, { allowEmpty: true })
     .pipe(newer(paths.images.dest))
     .pipe(avif({ quality: 95 }))
     .pipe(dest(paths.images.dest))
     .pipe(browserSync.stream());
 }
-
 
 // Fonts
 function fonts() {
@@ -101,7 +96,7 @@ function fonts() {
     .pipe(dest(paths.fonts.dest));
 }
 
-// Локальный сервер
+// Локальний сервер
 function serve() {
   browserSync.init({
     server: {
@@ -118,10 +113,15 @@ function serve() {
   watch(paths.fonts.src, fonts);
 }
 
-// Сборка
-export { clean, html, styles, scripts, images, fonts, serve };
+exports.clean = clean;
+exports.html = html;
+exports.styles = styles;
+exports.scripts = scripts;
+exports.images = images;
+exports.fonts = fonts;
+exports.serve = serve;
 
-export default series(
+exports.default = series(
   clean,
   parallel(html, styles, scripts, images, fonts),
   serve
