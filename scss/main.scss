@@ -1,4 +1,4 @@
-@import url('reset');
-@import url('vars');
-@import url('fonts');
-@import url('minilib');
+@use 'reset' as *;
+@use 'vars' as *;
+@use 'fonts' as *;
+@use 'minilib' as *;
