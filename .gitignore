@@ -2,6 +2,9 @@
 .idea/
 .idea/*
 .vscode/
-/build/
-/node_modules/
 npm-debug.*
+
+dist/
+/node_modules/
+package-lock.json
+/css/*
