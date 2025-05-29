@@ -5,5 +5,51 @@
 @use 'global' as *;
 
 body {
+  color: $main-font-color;
+  font: $main-font;
+  
+}
 
+.container {
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.header {
+  padding: 40px 0 40px;
+}
+.menu{
+  &__list-item + .menu__list-item{
+    padding-left: 35px;
+  }
+  &__list-link{
+    text-transform: uppercase;
+    font: $bold-font;
+    color: $black;
+  }
+  &__list-link.active{
+    color: $main-accent;
+    border-bottom: 2px solid $main-accent;
+  }
+}
+.user-nav{
+  &__link + .user-nav__link {
+    padding-left: 25px;
+    position: relative;
+  }
+  &__link span {
+    position: absolute;
+    content: '';
+    width: 18px;
+    height: 18px;
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+    background-color: $main-accent;
+    text-align: center;
+    font : $main-font;
+    font-size: 12px;
+    color: $white;
+  }
 }

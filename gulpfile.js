@@ -29,6 +29,7 @@ const paths = {
   },
   images: {
     src: 'image/src/**/*.{jpg,jpeg,png}',
+    svg: 'image/src/**/*.svg',
     dest: 'dist/image/',
   },
   fonts: {
@@ -78,9 +79,17 @@ function scripts() {
 
 // Images
 function images() {
-  return src(paths.images.src, { allowEmpty: true })
+  return src(paths.images.src, { base: 'image/src', allowEmpty: true }) // сохраняем структуру от image/src
     .pipe(newer(paths.images.dest))
     .pipe(avif({ quality: 95 }))
+    .pipe(dest(paths.images.dest)) // всё равно в dist/image, но структура внутри сохранится
+    .pipe(browserSync.stream());
+}
+
+//SVG
+function svg() {
+  return src(paths.images.svg, { base: 'image/src', allowEmpty: true })
+    .pipe(newer(paths.images.dest))
     .pipe(dest(paths.images.dest))
     .pipe(browserSync.stream());
 }
@@ -123,6 +132,6 @@ exports.serve = serve;
 
 exports.default = series(
   clean,
-  parallel(html, styles, scripts, images, fonts),
+  parallel(html, styles, scripts, images, svg, fonts),
   serve
 );
